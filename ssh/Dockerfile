@@ -50,6 +50,7 @@ RUN apt-get update \
         net-tools \
         nmap \
         openssh-client \
+        openssh-server \
         openssl \
         pwgen \
         python3-pip \
