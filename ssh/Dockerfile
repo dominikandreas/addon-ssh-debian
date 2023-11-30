@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:14.3.2
+ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base:7.2.0
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -17,62 +17,52 @@ ARG HA_CLI_VERSION="4.29.0"
 ARG TTYD_VERSION="1.7.4"
 # hadolint ignore=DL3003,DL3042
 RUN \
-    apk add --no-cache --virtual .build-dependencies \
-        bsd-compat-headers=0.7.2-r5 \
-        build-base=0.5-r3 \
-        cmake=3.26.5-r0 \
-        docker=23.0.6-r7 \
-        json-c-dev=0.16-r3 \
-        libffi-dev=3.4.4-r2 \
-        libuv-dev=1.44.2-r2 \
-        openssl-dev=3.1.4-r1 \
-        python3-dev=3.11.6-r0 \
-        zlib-dev=1.2.13-r1 \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        docker.io \
+        git \
+        libffi-dev \
+        libjson-c-dev \
+        libssl-dev \
+        libuv1-dev \
+        python3-dev \
+        zlib1g-dev \
     \
-    && apk add --no-cache \
-        ack=3.7.0-r0 \
-        alsa-plugins-pulse=1.2.7.1-r2 \
-        alsa-utils=1.2.9-r0 \
-        awake=1.0-r9 \
-        bash-completion=2.11-r5 \
-        bind-tools=9.18.19-r0 \
-        bluez=5.66-r5 \
-        colordiff=1.0.21-r0 \
-        docker-bash-completion=23.0.6-r7 \
-        docker-zsh-completion=23.0.6-r7 \
-        gcompat=1.1.0-r1 \
-        git=2.40.1-r0 \
-        htop=3.2.2-r1 \
-        json-c=0.16-r3 \
-        libltdl=2.4.7-r2 \
-        libstdc++=12.2.1_git20220924-r10 \
-        libuv=1.44.2-r2 \
-        libxml2-utils=2.11.6-r0 \
-        mariadb-client=10.11.5-r0 \
-        mosh=1.4.0-r1 \
-        mosquitto-clients=2.0.18-r0 \
-        nano-syntax=7.2-r1 \
-        nano=7.2-r1 \
-        ncurses=6.4_p20230506-r0 \
-        net-tools=2.10-r3 \
-        networkmanager-cli=1.42.8-r0 \
-        nmap=7.93-r1 \
-        openssh=9.3_p2-r0 \
-        openssl=3.1.4-r1 \
-        pwgen=2.08-r3 \
-        pulseaudio-utils=16.1-r10 \
-        py3-pip=23.1.2-r0 \
-        python3=3.11.6-r0 \
-        rsync=3.2.7-r4 \
-        sqlite=3.41.2-r2 \
-        sudo=1.9.13_p3-r2 \
-        tmux=3.3a_git20230428-r0 \
-        vim=9.0.2073-r0 \
-        wget=1.21.4-r0 \
-        zip=3.0-r12 \
-        zsh-autosuggestions=0.7.0-r0 \
-        zsh-syntax-highlighting=0.7.1_git20220514-r0 \
-        zsh=5.9-r2 \
+    && apt-get install -y --no-install-recommends \
+        ack \
+        alsa-utils \
+        bash-completion \
+        bind9-utils \
+        bluez \
+        colordiff \
+        docker-compose \
+        gcompat \
+        htop \
+        libltdl7 \
+        libstdc++6 \
+        libuv1 \
+        libxml2-utils \
+        mariadb-client \
+        mosh \
+        nano \
+        ncurses-bin \
+        net-tools \
+        nmap \
+        openssh-client \
+        openssl \
+        pwgen \
+        python3-pip \
+        python3 \
+        rsync \
+        sqlite3 \
+        sudo \
+        tmux \
+        vim \
+        wget \
+        zip \
+        zsh \
     \
     && git clone --depth 1 \
         https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh \
@@ -83,7 +73,7 @@ RUN \
     && chmod a+x /usr/bin/ha \
     && ha completion bash > /usr/share/bash-completion/completions/ha \
     \
-    && sed -i -e "s#bin/ash#bin/zsh#" /etc/passwd \
+    && sed -i -e "s#/bin/ash#/bin/zsh#" /etc/passwd \
     \
     && git clone --branch "v4.3.2" --depth=1 \
         https://github.com/warmcat/libwebsockets.git /tmp/libwebsockets \
@@ -116,21 +106,17 @@ RUN \
     && make \
     && make install \
     \
-    && cp /usr/bin/docker /usr/local/bin/.undocked \
+    && ln -s /usr/bin/docker /usr/local/bin/.undocked \
     \
-    && pip3 install -r /tmp/requirements.txt \
+    && pip3 install --no-cache-dir -r /tmp/requirements.txt \
     \
-    && apk del --no-cache --purge .build-dependencies \
-    \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && find /usr \
         \( -type d -a -name test -o -name tests -o -name '__pycache__' \) \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
         -exec rm -rf '{}' + \
-    \
-    && rm -f -r \
-        /root/.cache \
-        /root/.cmake \
-        /tmp/*
 
 # Copy root filesystem
 COPY rootfs /
