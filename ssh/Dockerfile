@@ -116,6 +116,9 @@ RUN apt-get update \
 # Copy root filesystem
 COPY rootfs /
 
+# Create privilege separation directory for ssh: /run/sshd
+RUN mkdir /run/sshd
+
 # Ensure right permissions
 RUN \
     chmod 0750 /etc/sudo.conf \
