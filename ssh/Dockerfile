@@ -16,8 +16,8 @@ ARG BUILD_ARCH=amd64
 ARG HA_CLI_VERSION="4.29.0"
 ARG TTYD_VERSION="1.7.4"
 # hadolint ignore=DL3003,DL3042
-RUN \
-    apt-get update \
+
+RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         cmake \
@@ -29,8 +29,8 @@ RUN \
         libuv1-dev \
         python3-dev \
         zlib1g-dev \
-    \
-    && apt-get install -y --no-install-recommends \
+   \
+   &&  apt-get install -y --no-install-recommends \
         ack \
         alsa-utils \
         bash-completion \
@@ -38,7 +38,6 @@ RUN \
         bluez \
         colordiff \
         docker-compose \
-        gcompat \
         htop \
         libltdl7 \
         libstdc++6 \
@@ -63,8 +62,8 @@ RUN \
         wget \
         zip \
         zsh \
-    \
-    && git clone --depth 1 \
+  \
+  && git clone --depth 1 \
         https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh \
     \
     && curl -L -s -o /usr/bin/ha \
@@ -74,10 +73,9 @@ RUN \
     && ha completion bash > /usr/share/bash-completion/completions/ha \
     \
     && sed -i -e "s#/bin/ash#/bin/zsh#" /etc/passwd \
-    \
-    && git clone --branch "v4.3.2" --depth=1 \
+  \
+  && git clone --branch "v4.3.2" --depth=1 \
         https://github.com/warmcat/libwebsockets.git /tmp/libwebsockets \
-    \
     && mkdir -p /tmp/libwebsockets/build \
     && cd /tmp/libwebsockets/build \
     && cmake .. \
@@ -92,8 +90,8 @@ RUN \
         -DLWS_WITHOUT_TESTAPPS=ON \
     && make \
     && make install \
-    \
-    && git clone --branch main --single-branch \
+  \
+  && git clone --branch main --single-branch \
         https://github.com/tsl0922/ttyd.git /tmp/ttyd \
     && git -C /tmp/ttyd checkout "${TTYD_VERSION}" \
     \
@@ -108,15 +106,11 @@ RUN \
     \
     && ln -s /usr/bin/docker /usr/local/bin/.undocked \
     \
-    && pip3 install --no-cache-dir -r /tmp/requirements.txt \
+    && pip3 install --break-system-packages --no-cache-dir -r /tmp/requirements.txt \
     \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && find /usr \
-        \( -type d -a -name test -o -name tests -o -name '__pycache__' \) \
-        -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
-        -exec rm -rf '{}' + \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy root filesystem
 COPY rootfs /
