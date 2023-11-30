@@ -1,10 +1,9 @@
 ---
-name: Advanced SSH & Web Terminal
+name: Advanced SSH & Web Terminal - Debian base
 version: dev
-slug: ssh
-description: A supercharged SSH & Web Terminal access to your Home Assistant instance
-url: https://github.com/hassio-addons/addon-ssh
-codenotary: codenotary@frenck.dev
+slug: ssh-debian
+description: A supercharged SSH & Web Terminal access to your Home Assistant instance, based on debian
+url: https://github.com/dominikandreas/addon-ssh-debian
 startup: services
 ingress: true
 ingress_port: 0
