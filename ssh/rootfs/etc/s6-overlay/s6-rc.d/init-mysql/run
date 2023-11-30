@@ -22,5 +22,5 @@ if bashio::services.available "mysql"; then
     echo "password=\"${password}\""
     echo "port=${port}"
     echo "user=\"${username}\""
-  } > /etc/my.cnf.d/service.cnf
+  } > /etc/mysql/conf.d/service.cnf
 fi
