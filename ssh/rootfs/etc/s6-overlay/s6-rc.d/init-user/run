@@ -88,11 +88,11 @@ fi
 
 # Install user configured/requested packages
 if bashio::config.has_value 'packages'; then
-    apk update \
-        || bashio::exit.nok 'Failed updating Alpine packages repository indexes'
+    apt update \
+        || bashio::exit.nok 'Failed updating Debian packages repository indexes'
 
     for package in $(bashio::config 'packages'); do
-        apk add "$package" \
+        apt install "$package" \
             || bashio::exit.nok "Failed installing package ${package}"
     done
 fi
