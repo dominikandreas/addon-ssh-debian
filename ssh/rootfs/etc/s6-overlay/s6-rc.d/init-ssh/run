@@ -26,7 +26,7 @@ bashio::config.require.username 'ssh.username'
 
 # Warn about using the root user
 if bashio::config.equals 'ssh.username' 'root' \
-    || bashio::config.equals 'web.username' 'root'; then
+|| bashio::config.equals 'web.username' 'root'; then
     bashio::log.warning
     bashio::log.warning 'Logging in with "root" as the username,'
     bashio::log.warning 'is security wise a bad idea!'
@@ -38,7 +38,7 @@ fi
 
 # We require at least a password or an authorized key
 if bashio::config.is_empty 'ssh.authorized_keys' \
-    && bashio::config.is_empty 'ssh.password';
+&& bashio::config.is_empty 'ssh.password';
 then
     bashio::log.fatal
     bashio::log.fatal 'Configuration of this add-on is incomplete.'
@@ -55,7 +55,7 @@ fi
 
 # SFTP only works if the user is root
 if bashio::config.true 'ssh.sftp' \
-    && ! bashio::config.equals 'ssh.username' 'root';
+&& ! bashio::config.equals 'ssh.username' 'root';
 then
     bashio::log.fatal
     bashio::log.fatal 'You have enabled SFTP using the "ssh.sftp" add-on'
@@ -72,7 +72,7 @@ fi
 if bashio::config.has_value 'ssh.password'; then
     bashio::log.warning
     bashio::log.warning \
-        'Logging in with a SSH password is security wise, a bad idea!'
+    'Logging in with a SSH password is security wise, a bad idea!'
     bashio::log.warning 'Please, consider using a public/private key pair.'
     bashio::log.warning 'What is this? https://kb.iu.edu/d/aews'
     bashio::log.warning
@@ -81,15 +81,15 @@ fi
 # Generate host keys
 if ! bashio::fs.file_exists "${SSH_HOST_RSA_KEY}"; then
     bashio::log.notice 'RSA host key missing, generating one...'
-
+    
     ssh-keygen -t rsa -f "${SSH_HOST_RSA_KEY}" -N "" \
-        || bashio::exit.nok 'Failed to generate RSA host key'
+    || bashio::exit.nok 'Failed to generate RSA host key'
 fi
 
 if ! bashio::fs.file_exists "${SSH_HOST_ED25519_KEY}"; then
     bashio::log.notice 'ED25519 host key missing, generating one...'
     ssh-keygen -t ed25519 -f "${SSH_HOST_ED25519_KEY}" -N "" \
-        || bashio::exit.nok 'Failed to generate ED25519 host key'
+    || bashio::exit.nok 'Failed to generate ED25519 host key'
 fi
 
 username=$(bashio::config 'ssh.username')
@@ -97,18 +97,22 @@ username=$(bashio::string.lower "${username}")
 
 # Create user account if the user isn't root
 if [[ "${username}" != "root" ]]; then
-
+    
     # Create a user account
     adduser --disabled-password --gecos "" "${username}" \
-        || bashio::exit.nok 'Failed creating the user account'
-
+    || bashio::exit.nok 'Failed creating the user account'
+    
     # Add new user to the sudo group (equivalent to wheel in Alpine)
     adduser "${username}" sudo \
-        || bashio::exit.nok 'Failed adding user to sudo group'
-
+    || bashio::exit.nok 'Failed adding user to sudo group'
+    
     # Ensure new user switches to root after login
     echo 'exec sudo -i' > "/home/${username}/.profile" \
-        || bashio::exit.nok 'Failed configuring user profile'
+    || bashio::exit.nok 'Failed configuring user profile'
+    
+    # Ensure new user can enter sudo without entering a password
+    echo "${username} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${username}" \
+    || bashio::exit.nok 'Failed configuring sudoers'
 fi
 
 # We need to set a password for the user account
