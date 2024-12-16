@@ -92,7 +92,7 @@ if bashio::config.has_value 'packages'; then
         || bashio::exit.nok 'Failed updating Debian packages repository indexes'
 
     for package in $(bashio::config 'packages'); do
-        apt install "$package" \
+        apt install -y "$package" \
             || bashio::exit.nok "Failed installing package ${package}"
     done
 fi
@@ -104,3 +104,6 @@ if bashio::config.has_value 'init_commands'; then
             || bashio::exit.nok "Failed executing init command: ${cmd}"
     done <<< "$(bashio::config 'init_commands')"
 fi
+
+# map the .code-server from config to persist vscode setup
+mkdir -p /config/.code-server && ln -s /root/.code-server

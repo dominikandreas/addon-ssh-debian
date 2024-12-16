@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base:7.2.0
+ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base:7.6.2
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -13,8 +13,8 @@ COPY requirements.txt /tmp/
 
 # Setup base
 ARG BUILD_ARCH=amd64
-ARG HA_CLI_VERSION="4.29.0"
-ARG TTYD_VERSION="1.7.4"
+ARG HA_CLI_VERSION="4.36.0"
+ARG TTYD_VERSION="1.7.7"
 # hadolint ignore=DL3003,DL3042
 
 RUN apt-get update \
@@ -75,7 +75,7 @@ RUN apt-get update \
     \
     && sed -i -e "s#/bin/ash#/bin/zsh#" /etc/passwd \
   \
-  && git clone --branch "v4.3.2" --depth=1 \
+  && git clone --branch "v4.3.3" --depth=1 \
         https://github.com/warmcat/libwebsockets.git /tmp/libwebsockets \
     && mkdir -p /tmp/libwebsockets/build \
     && cd /tmp/libwebsockets/build \
@@ -124,6 +124,9 @@ RUN \
     chmod 0750 /etc/sudo.conf \
     && chmod 0750 -R /etc/sudoers.d \
     && chmod 0640 /etc/sudoers.d
+
+# Allow users sudo access without password
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Build arguments
 ARG BUILD_ARCH
