@@ -110,7 +110,8 @@ if [[ "${username}" != "root" ]]; then
     if getent group docker >/dev/null; then
         current_gid=$(getent group docker | cut -d: -f3)
         if [ "$current_gid" -ne 102 ]; then
-            bashio::exit.nok "Docker group exists but GID is ${current_gid}, expected 102"
+            groupmod -g 102 docker || bashio::exit.nok "Failed modifying docker group GID from ${current_gid} to 102"
+
         fi
     else
         groupadd -g 102 docker || bashio::exit.nok 'Failed creating docker group with GID 102'
