@@ -17,6 +17,16 @@ ARG HA_CLI_VERSION="4.37.0"
 ARG TTYD_VERSION="1.7.7"
 # hadolint ignore=DL3003,DL3042
 
+# Ensure the docker group exists with GID 102
+RUN if getent group docker >/dev/null; then \
+        current_gid=$(getent group docker | cut -d: -f3); \
+        if [ "$current_gid" -ne 102 ]; then \
+            groupmod -g 102 docker || { echo "Failed modifying docker group GID from ${current_gid} to 102"; exit 1; }; \
+        fi; \
+    else \
+        groupadd -g 102 docker || { echo "Failed creating docker group with GID 102"; exit 1; }; \
+    fi
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
