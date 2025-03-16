@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base:7.6.2
+ARG BUILD_FROM=ghcr.io/hassio-addons/debian-base:7.7.1
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -13,7 +13,7 @@ COPY requirements.txt /tmp/
 
 # Setup base
 ARG BUILD_ARCH=amd64
-ARG HA_CLI_VERSION="4.36.0"
+ARG HA_CLI_VERSION="4.37.0"
 ARG TTYD_VERSION="1.7.7"
 # hadolint ignore=DL3003,DL3042
 
@@ -29,8 +29,6 @@ RUN apt-get update \
         libuv1-dev \
         python3-dev \
         zlib1g-dev \
-   \
-   &&  apt-get install -y --no-install-recommends \
         ack \
         alsa-utils \
         bash-completion \
