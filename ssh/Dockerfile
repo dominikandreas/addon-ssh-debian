@@ -17,7 +17,7 @@ ARG HA_CLI_VERSION="4.37.0"
 ARG TTYD_VERSION="1.7.7"
 # hadolint ignore=DL3003,DL3042
 
-# Ensure the docker group exists with GID 102
+# Ensure the docker group exists with GID 102, this is important since that's the same as on the host (at the time of writing...)
 RUN if getent group docker >/dev/null; then \
         current_gid=$(getent group docker | cut -d: -f3); \
         if [ "$current_gid" -ne 102 ]; then \

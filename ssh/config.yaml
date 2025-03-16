@@ -1,6 +1,6 @@
 ---
 name: Advanced SSH & Web Terminal - Debian base
-version: 2025.03.16c
+version: 2025.03.16d
 slug: ssh-debian
 description: A supercharged SSH & Web Terminal access to your Home Assistant instance, based on debian
 url: https://github.com/dominikandreas/addon-ssh-debian
