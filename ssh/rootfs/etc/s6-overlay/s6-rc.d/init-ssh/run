@@ -105,6 +105,10 @@ if [[ "${username}" != "root" ]]; then
     # Add new user to the sudo group (equivalent to wheel in Alpine)
     adduser "${username}" sudo \
     || bashio::exit.nok 'Failed adding user to sudo group'
+
+    # Add user to docker group
+    adduser "${username}" docker \
+    || bashio::exit.nok 'Failed adding user to docker group'
     
     # Ensure new user switches to root after login
     echo 'exec sudo -i' > "/home/${username}/.profile" \
@@ -113,6 +117,7 @@ if [[ "${username}" != "root" ]]; then
     # Ensure new user can enter sudo without entering a password
     echo "${username} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${username}" \
     || bashio::exit.nok 'Failed configuring sudoers'
+
 fi
 
 # We need to set a password for the user account
