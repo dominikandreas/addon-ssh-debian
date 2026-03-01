@@ -32,6 +32,7 @@ RUN apt-get update \
         build-essential \
         cmake \
         docker.io \
+        docker-cli \
         git \
         libffi-dev \
         libjson-c-dev \
